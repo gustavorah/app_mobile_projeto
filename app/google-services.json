@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19960258098",
+    "project_id": "projeto-153ae",
+    "storage_bucket": "projeto-153ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19960258098:android:202e4372dd6387741ae62b",
+        "android_client_info": {
+          "package_name": "com.gustavo.projeto"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxCZ9FkUFMIpvxC8t0kXeJ7GjxYZBBWqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
