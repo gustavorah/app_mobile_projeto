@@ -1,4 +1,4 @@
-package com.gustavo.projeto
+package com.gustavo.projeto.model
 
 data class Crud1Model (
     var id: String? = null,

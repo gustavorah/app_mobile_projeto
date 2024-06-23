@@ -1,24 +1,23 @@
-package com.gustavo.projeto
+package com.gustavo.projeto.view
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
-import android.transition.ChangeBounds
-import android.transition.TransitionManager
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.gustavo.projeto.databinding.ActivityCrud1Binding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.gustavo.projeto.model.Crud1Model
+import kotlin.properties.Delegates
 
 class Crud1Activity : AppCompatActivity() {
     private lateinit var binding: ActivityCrud1Binding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var dbRef: DatabaseReference
+
+    private var reiniciarView by Delegates.notNull<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +28,20 @@ class Crud1Activity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
-
+        reiniciarView = false
         binding.btnVoltar.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            if (reiniciarView)
+            {
+                val intent = Intent(this, Crud1Activity::class.java)
 
-            startActivity(intent)
+                startActivity(intent)
+            }
+            else
+            {
+                val intent = Intent(this, MainActivity::class.java)
+
+                startActivity(intent)
+            }
         }
 
         binding.btnCreateFunc.setOnClickListener {
@@ -43,13 +51,20 @@ class Crud1Activity : AppCompatActivity() {
                 binding.txtIdade.visibility = View.VISIBLE
                 binding.txtEmail.visibility = View.VISIBLE
                 binding.btnCreateFunc.visibility = View.INVISIBLE
+                binding.btnList.visibility = View.INVISIBLE
 
                 binding.btnCreate.visibility = View.VISIBLE
+                reiniciarView = true
             }
         }
 
         binding.btnCreate.setOnClickListener {
             storeCrud1()
+        }
+
+        binding.btnList.setOnClickListener {
+            val intent = Intent(this, Crud1ListActivity::class.java)
+            startActivity(intent)
         }
     }
 
