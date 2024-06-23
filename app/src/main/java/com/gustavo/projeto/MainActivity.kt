@@ -20,6 +20,12 @@ class MainActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
+        binding.btnCrud1.setOnClickListener {
+            val intent = Intent(this, Crud1Activity::class.java)
+
+            startActivity(intent)
+        }
+
         binding.btnSair.setOnClickListener {
             firebaseAuth.signOut()
 
