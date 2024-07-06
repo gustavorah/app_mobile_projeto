@@ -3,6 +3,7 @@ package com.gustavo.projeto.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +17,13 @@ import com.gustavo.projeto.adapter.Crud1Adapter
 import com.gustavo.projeto.databinding.ActivityCrud1ListBinding
 import com.gustavo.projeto.model.Crud1Model
 
-class Crud1ListActivity : AppCompatActivity() {
+class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener {
     private lateinit var crudRecyclerView: RecyclerView
     private lateinit var tvLoadingData: TextView
     private lateinit var crudList: ArrayList<Crud1Model>
     private lateinit var dbRef: DatabaseReference
     private lateinit var binding: ActivityCrud1ListBinding
+    private lateinit var mAdapter: Crud1Adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,16 +39,20 @@ class Crud1ListActivity : AppCompatActivity() {
         crudList = arrayListOf<Crud1Model>()
 
         getCrudData()
+
+        binding.btnVoltar.setOnClickListener {
+            val intent = Intent(this, Crud1Activity::class.java)
+            startActivity(intent)
+        }
     }
 
-    private fun getCrudData()
-    {
+    private fun getCrudData() {
         crudRecyclerView.visibility = View.GONE
         tvLoadingData.visibility = View.VISIBLE
 
         dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
 
-        dbRef.addValueEventListener(object: ValueEventListener {
+        dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 crudList.clear()
                 if (snapshot.exists()) {
@@ -54,20 +60,10 @@ class Crud1ListActivity : AppCompatActivity() {
                         val crudData = crudSnap.getValue(Crud1Model::class.java)
                         crudList.add(crudData!!)
                     }
-                    val mAdapter = Crud1Adapter(crudList)
+                    mAdapter = Crud1Adapter(crudList)
                     crudRecyclerView.adapter = mAdapter
 
-                    mAdapter.setOnItemClickListener(object : Crud1Adapter.onItemClickListener {
-                        override fun onItemClick(position: Int) {
-
-                            val intent = Intent(this@Crud1ListActivity, Crud1DetailsActivity::class.java)
-
-                            intent.putExtra("id", crudList[position].id)
-                            intent.putExtra("nome", crudList[position].nome)
-                            intent.putExtra("email", crudList[position].email)
-                            intent.putExtra("idade", crudList[position].idade)
-                        }
-                    })
+                    mAdapter.setOnItemClickListener(this@Crud1ListActivity)
 
                     crudRecyclerView.visibility = View.VISIBLE
                     tvLoadingData.visibility = View.GONE
@@ -78,5 +74,41 @@ class Crud1ListActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    override fun onItemClick(position: Int, viewHolder: RecyclerView.ViewHolder, itemId: String) {
+        val selectedItem = crudList[position]
+        val btnDeletar = getDeleteButton(viewHolder as Crud1Adapter.ViewHolder)
+        val btnEditar = getEditButton(viewHolder)
+        btnDeletar.setOnClickListener {
+            deleteCrudItem(itemId, position)
+        }
+
+        btnEditar.setOnClickListener {
+            val intent = Intent(this, Crud1DetailsActivity::class.java)
+            intent.putExtra("id", selectedItem.id)
+            intent.putExtra("nome", selectedItem.nome)
+            intent.putExtra("email", selectedItem.email)  // Assuming "email" exists
+            intent.putExtra("idade", selectedItem.idade)  // Assuming "idade" exists
+            startActivity(intent)
+        }
+    }
+
+    fun deleteCrudItem(itemId: String, position: Int) {
+        dbRef.child(itemId).removeValue().addOnSuccessListener {
+            crudList.removeAt(position)
+            mAdapter.notifyItemRemoved(position)
+        }.addOnFailureListener {
+            // Handle deletion failure (optional)
+            // For example, display a toast message
+        }
+    }
+
+    private fun getDeleteButton(viewHolder: Crud1Adapter.ViewHolder): Button {
+        return viewHolder.btnDeletar
+    }
+
+    private fun getEditButton(viewHolder: Crud1Adapter.ViewHolder): Button {
+        return viewHolder.btnEditar
     }
 }

@@ -12,13 +12,14 @@ import com.google.firebase.database.FirebaseDatabase
 import com.gustavo.projeto.model.Crud1Model
 import kotlin.properties.Delegates
 
-class Crud1Activity : AppCompatActivity() {
+class Crud1Activity(
+    val criarCrud: Boolean = false
+) : AppCompatActivity() {
     private lateinit var binding: ActivityCrud1Binding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var dbRef: DatabaseReference
 
-    private var reiniciarView by Delegates.notNull<Boolean>()
-
+    private var reiniciarView: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCrud1Binding.inflate(layoutInflater)
@@ -28,7 +29,16 @@ class Crud1Activity : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
-        reiniciarView = false
+
+//        val crud1 = intent.getSerializableExtra("crud1") as? Crud1Model
+//
+//        crud1?.let {
+//            val id = it.id
+//            val nome = it.nome
+//            val email = it.email
+//            val idade = it.idade
+//        }
+//        reiniciarView = false
         binding.btnVoltar.setOnClickListener {
             if (reiniciarView)
             {
@@ -42,6 +52,18 @@ class Crud1Activity : AppCompatActivity() {
 
                 startActivity(intent)
             }
+        }
+
+        if (criarCrud)
+        {
+            binding.txtName.visibility = View.VISIBLE
+            binding.txtIdade.visibility = View.VISIBLE
+            binding.txtEmail.visibility = View.VISIBLE
+            binding.btnCreateFunc.visibility = View.INVISIBLE
+            binding.btnList.visibility = View.INVISIBLE
+
+            binding.btnCreate.visibility = View.VISIBLE
+            reiniciarView = true
         }
 
         binding.btnCreateFunc.setOnClickListener {
@@ -90,4 +112,6 @@ class Crud1Activity : AppCompatActivity() {
                 Toast.makeText(this, "Operação cancelada", Toast.LENGTH_LONG).show()
             }
     }
+
+
 }
