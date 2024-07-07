@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -24,12 +26,15 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
     private lateinit var dbRef: DatabaseReference
     private lateinit var binding: ActivityCrud1ListBinding
     private lateinit var mAdapter: Crud1Adapter
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCrud1ListBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+        firebaseAuth = FirebaseAuth.getInstance()
 
         crudRecyclerView = binding.rvCrud1
         crudRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -47,12 +52,15 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
     }
 
     private fun getCrudData() {
+        val currentUser = firebaseAuth.currentUser?.uid
         crudRecyclerView.visibility = View.GONE
         tvLoadingData.visibility = View.VISIBLE
 
         dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
 
-        dbRef.addValueEventListener(object : ValueEventListener {
+        val query = dbRef.orderByChild("userId").equalTo(currentUser)
+
+        query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 crudList.clear()
                 if (snapshot.exists()) {
@@ -85,13 +93,19 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
         }
 
         btnEditar.setOnClickListener {
-            val intent = Intent(this, Crud1DetailsActivity::class.java)
-            intent.putExtra("id", selectedItem.id)
-            intent.putExtra("nome", selectedItem.nome)
-            intent.putExtra("email", selectedItem.email)  // Assuming "email" exists
-            intent.putExtra("idade", selectedItem.idade)  // Assuming "idade" exists
-            startActivity(intent)
+            editCrudItem(selectedItem)
+
         }
+    }
+
+    fun editCrudItem(selectedItem: Crud1Model) {
+        val intent = Intent(this, Crud1DetailsActivity::class.java)
+        intent.putExtra("id", selectedItem.id)
+        intent.putExtra("nome", selectedItem.nome)
+        intent.putExtra("descricao", selectedItem.descricao)
+        intent.putExtra("localizacao", selectedItem.localizacao)
+        intent.putExtra("category", selectedItem.category)
+        startActivity(intent)
     }
 
     fun deleteCrudItem(itemId: String, position: Int) {
@@ -104,11 +118,11 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
         }
     }
 
-    private fun getDeleteButton(viewHolder: Crud1Adapter.ViewHolder): Button {
+    private fun getDeleteButton(viewHolder: Crud1Adapter.ViewHolder): ImageButton {
         return viewHolder.btnDeletar
     }
 
-    private fun getEditButton(viewHolder: Crud1Adapter.ViewHolder): Button {
+    private fun getEditButton(viewHolder: Crud1Adapter.ViewHolder): ImageButton {
         return viewHolder.btnEditar
     }
 }

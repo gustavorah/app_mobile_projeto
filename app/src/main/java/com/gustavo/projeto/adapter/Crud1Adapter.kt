@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.gustavo.projeto.R
@@ -32,6 +33,7 @@ class Crud1Adapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentCrud = crud1List[position]
         holder.tvCrudName.text = currentCrud.nome
+        holder.tvCrudCategoria.text = currentCrud.category
         holder.itemView.setOnClickListener {
             mListener?.onItemClick(position, holder, currentCrud.id ?: "")
         }
@@ -44,8 +46,9 @@ class Crud1Adapter(
     inner class ViewHolder(itemView: View, private val onItemClickListener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
 
         val tvCrudName: TextView = itemView.findViewById(R.id.tvCrudName)
-        val btnDeletar: Button = itemView.findViewById(R.id.btnDeletar)
-        val btnEditar: Button = itemView.findViewById(R.id.btnEditar)
+        val tvCrudCategoria: TextView = itemView.findViewById(R.id.tvCrudCategoria)
+        val btnDeletar: ImageButton = itemView.findViewById(R.id.btnDeletar)
+        val btnEditar: ImageButton = itemView.findViewById(R.id.btnEditar)
 
         init {
             btnDeletar.setOnClickListener {
@@ -55,9 +58,9 @@ class Crud1Adapter(
             }
 
             btnEditar.setOnClickListener {
-//                val context = itemView.context as Crud1ListActivity
-//                val selectedItem = crud1List[adapterPosition]
-//                context.editCrudItem(adapterPosition, selectedItem.id ?: "")
+                val context = itemView.context as Crud1ListActivity
+                val selectedItem = crud1List[adapterPosition]
+                context.editCrudItem(selectedItem)
             }
         }
     }

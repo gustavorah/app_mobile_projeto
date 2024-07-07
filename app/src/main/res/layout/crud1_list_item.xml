@@ -9,18 +9,18 @@
     app:cardElevation="8dp">
 
     <TextView
-        android:id="@+id/tvCrudId"
+        android:id="@+id/tvCrudCategoria"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="34dp"
+        android:layout_marginBottom="32dp"
         android:gravity="center"
-        android:text="Id"
+        android:text="Categoria"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/tvCrudName"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:id="@+id/tvCrudName"
@@ -32,34 +32,35 @@
         android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/tvCrudId"
+        app:layout_constraintTop_toBottomOf="@id/tvCrudCategoria"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="31dp"
         />
 
-    <Button
+    <ImageButton
         android:id="@+id/btnDeletar"
-        android:layout_width="102dp"
-        android:layout_height="58dp"
-        android:layout_marginEnd="112dp"
-        android:backgroundTint="@color/red"
-        android:text="Deletar"
-        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.581"
-        tools:layout_editor_absoluteY="4dp" />
+        app:layout_constraintHorizontal_bias="0.818"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.687"
+        app:srcCompat="@drawable/baseline_delete_24" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btnEditar"
-        android:layout_width="102dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="8dp"
-        android:backgroundTint="@color/yellow"
-        android:text="Editar"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toEndOf="@id/btnDeletar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="7dp" />
-
+        app:layout_constraintHorizontal_bias="0.985"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.687"
+        app:srcCompat="@drawable/baseline_edit_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

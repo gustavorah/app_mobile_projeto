@@ -13,6 +13,11 @@
         android:theme="@style/Theme.Projeto"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBzoFhLys3EfEKJXP3gDu7emwbZjHt9-xo"
+            />
+
         <activity
             android:name=".view.SignInActivity"
             android:exported="true">
@@ -41,6 +46,13 @@
             android:name=".view.Crud1ListActivity"
             android:exported="true">
         </activity>
-    </application>
 
+        <activity
+            android:name=".view.Crud1MapActivity"
+            android:exported="true"
+            >
+        </activity>
+    </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>
