@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         getUserImpacto()
 
         binding.btnCrud1.setOnClickListener {
-            startActivity(Intent(this, Crud1Activity::class.java))
+            startActivity(Intent(this, Crud1ListActivity::class.java))
         }
 
         binding.btnCalcular.setOnClickListener {

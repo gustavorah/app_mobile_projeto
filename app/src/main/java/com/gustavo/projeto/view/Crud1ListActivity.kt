@@ -46,6 +46,11 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
         getCrudData()
 
         binding.btnVoltar.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnInserir.setOnClickListener {
             val intent = Intent(this, Crud1Activity::class.java)
             startActivity(intent)
         }

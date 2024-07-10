@@ -36,34 +36,12 @@ class Crud1Activity(
         dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
 
         binding.btnVoltar.setOnClickListener {
-            if (reiniciarView) {
-                val intent = Intent(this, Crud1Activity::class.java)
-                startActivity(intent)
-            } else {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-            }
-        }
-
-        if (criarCrud) {
-            inserirView()
-            reiniciarView = true
-        }
-
-        binding.btnCreateFunc.setOnClickListener {
-            if (binding.btnCreateFunc.isEnabled) {
-                inserirView()
-                reiniciarView = true
-            }
+            val intent = Intent(this, Crud1ListActivity::class.java)
+            startActivity(intent)
         }
 
         binding.btnCreate.setOnClickListener {
             storeCrud1()
-        }
-
-        binding.btnList.setOnClickListener {
-            val intent = Intent(this, Crud1ListActivity::class.java)
-            startActivity(intent)
         }
 
         binding.btnLocalizacao.setOnClickListener {
@@ -81,16 +59,6 @@ class Crud1Activity(
         }
     }
 
-    private fun inserirView() {
-        binding.txtName.visibility = View.VISIBLE
-        binding.txtDescricao.visibility = View.VISIBLE
-        binding.spinnerAtividade.visibility = View.VISIBLE
-        binding.btnLocalizacao.visibility = View.VISIBLE
-        binding.btnCreate.visibility = View.VISIBLE
-
-        binding.btnCreateFunc.visibility = View.INVISIBLE
-        binding.btnList.visibility = View.INVISIBLE
-    }
 
     private fun setupSpinner() {
         val spinnerActivityType: Spinner = binding.spinnerAtividade
@@ -113,21 +81,40 @@ class Crud1Activity(
         val crudDescricao = binding.txtDescricao.text.toString()
         val crudLocalizacao = localizacao.toString()
         val crudCategoria = binding.spinnerAtividade.selectedItem.toString()
-        val crudImpacto = calcularImpactoPegadaCarbono(crudCategoria)
-        val crudUserId = firebaseAuth.currentUser?.uid
-        val crudId = dbRef.push().key!!
 
-        val crudObject = Crud1Model(crudId, crudName, crudDescricao, crudLocalizacao, crudCategoria, crudImpacto, crudUserId)
+        val valido = validarCamposObrigatorios(crudName, crudCategoria)
 
-        dbRef.child(crudId).setValue(crudObject)
-            .addOnCompleteListener {
-                Toast.makeText(this, "Inserido com sucesso", Toast.LENGTH_LONG).show()
+        if (valido)
+        {
+            val crudImpacto = calcularImpactoPegadaCarbono(crudCategoria)
+            val crudUserId = firebaseAuth.currentUser?.uid
+            val crudId = dbRef.push().key!!
 
-                binding.txtName.text?.clear()
-                binding.txtDescricao.text?.clear()
-            }.addOnCanceledListener {
-                Toast.makeText(this, "Operação cancelada", Toast.LENGTH_LONG).show()
-            }
+            val crudObject = Crud1Model(crudId, crudName, crudDescricao, crudLocalizacao, crudCategoria, crudImpacto, crudUserId)
+
+            dbRef.child(crudId).setValue(crudObject)
+                .addOnCompleteListener {
+                    Toast.makeText(this, "Inserido com sucesso", Toast.LENGTH_LONG).show()
+
+                    binding.txtName.text?.clear()
+                    binding.txtDescricao.text?.clear()
+                }.addOnCanceledListener {
+                    Toast.makeText(this, "Operação cancelada", Toast.LENGTH_LONG).show()
+                }
+        }
+        else
+        {
+            Toast.makeText(this, "Campos \"Atividade Sustentável\" e \"Categoria\" são obrigatórios", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun validarCamposObrigatorios(crudName: String, crudCategoria: String): Boolean {
+        var result = true
+        if (crudName.isEmpty() or crudCategoria.isEmpty())
+        {
+            result = false
+        }
+        return result
     }
 
     companion object {
