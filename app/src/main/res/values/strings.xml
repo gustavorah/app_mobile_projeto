@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Projeto</string>
     <string name="select_activity_prompt">Selecione a atividade</string>
+    <string name="select_category_prompt">Selecione a categoria</string>
 </resources>

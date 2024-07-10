@@ -3,7 +3,6 @@ package com.gustavo.projeto.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -45,8 +44,8 @@ class Crud1Adapter(
 
     inner class ViewHolder(itemView: View, private val onItemClickListener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
 
-        val tvCrudName: TextView = itemView.findViewById(R.id.tvCrudName)
-        val tvCrudCategoria: TextView = itemView.findViewById(R.id.tvCrudCategoria)
+        val tvCrudName: TextView = itemView.findViewById(R.id.tvCrudQuantidade)
+        val tvCrudCategoria: TextView = itemView.findViewById(R.id.tvCrudCategory)
         val btnDeletar: ImageButton = itemView.findViewById(R.id.btnDeletar)
         val btnEditar: ImageButton = itemView.findViewById(R.id.btnEditar)
 

@@ -15,35 +15,41 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.gustavo.projeto.adapter.Crud1Adapter
-import com.gustavo.projeto.databinding.ActivityCrud1ListBinding
+import com.gustavo.projeto.adapter.Crud2Adapter
+import com.gustavo.projeto.databinding.ActivityCrud2ListBinding
 import com.gustavo.projeto.model.Crud1Model
+import com.gustavo.projeto.model.Crud2Model
 
-class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener {
+class Crud2ListActivity : AppCompatActivity(), Crud2Adapter.OnItemClickListener {
     private lateinit var crudRecyclerView: RecyclerView
     private lateinit var tvLoadingData: TextView
-    private lateinit var crudList: ArrayList<Crud1Model>
-    private lateinit var dbRef: DatabaseReference
-    private lateinit var binding: ActivityCrud1ListBinding
-    private lateinit var mAdapter: Crud1Adapter
+    private lateinit var crud2List: ArrayList<Crud2Model>
+    private lateinit var crud1List: ArrayList<Crud1Model>
+    private lateinit var dbRefCrud2: DatabaseReference
+    private lateinit var dbRefCrud1: DatabaseReference
+    private lateinit var binding: ActivityCrud2ListBinding
+    private lateinit var mAdapter: Crud2Adapter
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCrud1ListBinding.inflate(layoutInflater)
+        binding = ActivityCrud2ListBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-        crudRecyclerView = binding.rvCrud1
+        crudRecyclerView = binding.rvCrud2
         crudRecyclerView.layoutManager = LinearLayoutManager(this)
         crudRecyclerView.setHasFixedSize(true)
         tvLoadingData = findViewById(binding.tvLoadingData.id)
 
-        crudList = arrayListOf<Crud1Model>()
+        crud2List = arrayListOf()
+        crud1List = arrayListOf()
 
-        getCrudData()
+        getCrud1Data {
+            getCrud2Data()
+        }
 
         binding.btnVoltar.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -51,32 +57,56 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
         }
 
         binding.btnInserir.setOnClickListener {
-            val intent = Intent(this, Crud1Activity::class.java)
+            val intent = Intent(this, Crud2Activity::class.java)
             startActivity(intent)
         }
     }
 
-    private fun getCrudData() {
+    private fun getCrud1Data(onComplete: () -> Unit) {
+        val currentUser = firebaseAuth.currentUser?.uid
+        dbRefCrud1 = FirebaseDatabase.getInstance().getReference("Crud1")
+
+        val query = dbRefCrud1.orderByChild("userId").equalTo(currentUser)
+
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                crud1List.clear()
+                if (snapshot.exists()) {
+                    for (crudSnap in snapshot.children) {
+                        val crudData = crudSnap.getValue(Crud1Model::class.java)
+                        crud1List.add(crudData!!)
+                    }
+                    onComplete()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
+    }
+
+    private fun getCrud2Data() {
         val currentUser = firebaseAuth.currentUser?.uid
         crudRecyclerView.visibility = View.GONE
         tvLoadingData.visibility = View.VISIBLE
 
-        dbRef = FirebaseDatabase.getInstance().getReference("Crud1")
+        dbRefCrud2 = FirebaseDatabase.getInstance().getReference("Crud2")
 
-        val query = dbRef.orderByChild("userId").equalTo(currentUser)
+        val query = dbRefCrud2.orderByChild("userId").equalTo(currentUser)
 
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                crudList.clear()
+                crud2List.clear()
                 if (snapshot.exists()) {
                     for (crudSnap in snapshot.children) {
-                        val crudData = crudSnap.getValue(Crud1Model::class.java)
-                        crudList.add(crudData!!)
+                        val crudData = crudSnap.getValue(Crud2Model::class.java)
+                        crud2List.add(crudData!!)
                     }
-                    mAdapter = Crud1Adapter(crudList)
+                    mAdapter = Crud2Adapter(crud2List, crud1List)
                     crudRecyclerView.adapter = mAdapter
 
-                    mAdapter.setOnItemClickListener(this@Crud1ListActivity)
+                    mAdapter.setOnItemClickListener(this@Crud2ListActivity)
 
                     crudRecyclerView.visibility = View.VISIBLE
                     tvLoadingData.visibility = View.GONE
@@ -90,8 +120,8 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
     }
 
     override fun onItemClick(position: Int, viewHolder: RecyclerView.ViewHolder, itemId: String) {
-        val selectedItem = crudList[position]
-        val btnDeletar = getDeleteButton(viewHolder as Crud1Adapter.ViewHolder)
+        val selectedItem = crud2List[position]
+        val btnDeletar = getDeleteButton(viewHolder as Crud2Adapter.ViewHolder)
         val btnEditar = getEditButton(viewHolder)
         btnDeletar.setOnClickListener {
             deleteCrudItem(itemId, position)
@@ -99,23 +129,20 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
 
         btnEditar.setOnClickListener {
             editCrudItem(selectedItem)
-
         }
     }
 
-    fun editCrudItem(selectedItem: Crud1Model) {
-        val intent = Intent(this, Crud1DetailsActivity::class.java)
+    fun editCrudItem(selectedItem: Crud2Model) {
+        val intent = Intent(this, Crud2DetailsActivity::class.java)
         intent.putExtra("id", selectedItem.id)
-        intent.putExtra("nome", selectedItem.nome)
-        intent.putExtra("descricao", selectedItem.descricao)
-        intent.putExtra("localizacao", selectedItem.localizacao)
+        intent.putExtra("quantidade", selectedItem.quantidade)
         intent.putExtra("category", selectedItem.category)
         startActivity(intent)
     }
 
     fun deleteCrudItem(itemId: String, position: Int) {
-        dbRef.child(itemId).removeValue().addOnSuccessListener {
-            crudList.removeAt(position)
+        dbRefCrud2.child(itemId).removeValue().addOnSuccessListener {
+            crud2List.removeAt(position)
             mAdapter.notifyItemRemoved(position)
         }.addOnFailureListener {
             // Handle deletion failure (optional)
@@ -123,11 +150,11 @@ class Crud1ListActivity : AppCompatActivity(), Crud1Adapter.OnItemClickListener 
         }
     }
 
-    private fun getDeleteButton(viewHolder: Crud1Adapter.ViewHolder): ImageButton {
+    private fun getDeleteButton(viewHolder: Crud2Adapter.ViewHolder): ImageButton {
         return viewHolder.btnDeletar
     }
 
-    private fun getEditButton(viewHolder: Crud1Adapter.ViewHolder): ImageButton {
+    private fun getEditButton(viewHolder: Crud2Adapter.ViewHolder): ImageButton {
         return viewHolder.btnEditar
     }
 }

@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, Crud1ListActivity::class.java))
         }
 
+        binding.btnCrud2.setOnClickListener {
+            startActivity(Intent(this, Crud2ListActivity::class.java))
+        }
+
         binding.btnCalcular.setOnClickListener {
             calcularPegadaCarbono()
         }
